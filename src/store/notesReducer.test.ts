@@ -21,7 +21,16 @@ describe('notesReducer', () => {
   })
 
   it('appends a note on add', () => {
-    expect(notesReducer([first], { type: 'add', note: second })).toEqual([first, second])
+    expect(notesReducer([first], { type: 'add', note: second })).toEqual([
+      first,
+      { ...second, zIndex: 2 },
+    ])
+  })
+
+  it('assigns a z-index above the current top when adding', () => {
+    const incoming = makeNote({ id: 'c', zIndex: 1 })
+    const next = notesReducer([first, second], { type: 'add', note: incoming })
+    expect(next[2]).toMatchObject({ id: 'c', zIndex: 3 })
   })
 
   it('patches only the matching note', () => {
@@ -64,5 +73,16 @@ describe('notesReducer', () => {
     const next = notesReducer(state, { type: 'patch', id: 'a', patch: { text: 'x' } })
     expect(next).not.toBe(state)
     expect(state[0].text).toBe('')
+  })
+
+  it('leaves state unchanged when patching a missing id', () => {
+    const state = [first]
+    const next = notesReducer(state, { type: 'patch', id: 'missing', patch: { text: 'nope' } })
+    expect(next).toEqual(state)
+    expect(next[0]).toBe(first)
+  })
+
+  it('replaces state with an empty list on hydrate', () => {
+    expect(notesReducer([first, second], { type: 'hydrate', notes: [] })).toEqual([])
   })
 })

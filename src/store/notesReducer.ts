@@ -9,7 +9,7 @@ export function notesReducer(state: Note[], action: Action): Note[] {
     case 'hydrate':
       return action.notes
     case 'add':
-      return [...state, action.note]
+      return [...state, { ...action.note, zIndex: maxZIndex(state) + 1 }]
     case 'patch':
       return state.map((note) =>
         note.id === action.id ? { ...note, ...action.patch } : note,

@@ -51,6 +51,11 @@ describe('rectsOverlap', () => {
     expect(rectsOverlap(box, { x: 100, y: 0, width: 40, height: 40 })).toBe(false)
   })
 
+  it('treats identical and nested rectangles as overlapping', () => {
+    expect(rectsOverlap(box, box)).toBe(true)
+    expect(rectsOverlap(box, { x: 10, y: 10, width: 10, height: 10 })).toBe(true)
+  })
+
   it('returns false when rectangles are separate', () => {
     expect(rectsOverlap(box, { x: 200, y: 200, width: 10, height: 10 })).toBe(false)
   })
@@ -74,19 +79,40 @@ describe('clampRectToBoard', () => {
       clampRectToBoard({ x: 900, y: 700, width: 200, height: 160 }, 800, 600),
     ).toEqual({ x: 600, y: 440, width: 200, height: 160 })
   })
+
+  it('clamps negative origins to the top-left', () => {
+    expect(
+      clampRectToBoard({ x: -80, y: -40, width: 200, height: 160 }, 800, 600),
+    ).toEqual({ x: 0, y: 0, width: 200, height: 160 })
+  })
 })
 
 describe('applyResize', () => {
   const start = { x: 100, y: 80, width: 200, height: 160 }
   const board = { width: 800, height: 600 }
 
-  it('grows from the south-east handle', () => {
-    expect(applyResize(start, 40, 30, 'se', board.width, board.height)).toEqual({
+  it('grows only width from the east handle', () => {
+    expect(applyResize(start, 50, 80, 'e', board.width, board.height)).toEqual({
       x: 100,
       y: 80,
-      width: 240,
-      height: 190,
+      width: 250,
+      height: 160,
     })
+  })
+
+  it('moves the top edge from the north handle', () => {
+    expect(applyResize(start, 0, -20, 'n', board.width, board.height)).toEqual({
+      x: 100,
+      y: 60,
+      width: 200,
+      height: 180,
+    })
+  })
+
+  it('keeps the right edge fixed when shrinking from the west past the minimum', () => {
+    const next = applyResize(start, 180, 0, 'w', board.width, board.height)
+    expect(next.width).toBe(MIN_NOTE_WIDTH)
+    expect(next.x + next.width).toBe(start.x + start.width)
   })
 
   it('moves the origin when resizing from the north-west handle', () => {

@@ -24,7 +24,7 @@ npm run preview
 npm test
 ```
 
-Unit tests cover the pure helpers in `geometry.ts` and `notesReducer.ts`. Integration tests drive the board through create, move, resize, and trash using pointer events.
+Unit tests cover geometry, the notes reducer, and localStorage load/save (including corrupt data). Hook and provider tests cover pointer sessions and persistence. Integration tests drive the board through create, move, resize, trash, colour, text, and z-order.
 
 ## Usage
 
