@@ -18,6 +18,14 @@ npm run build
 npm run preview
 ```
 
+## Tests
+
+```bash
+npm test
+```
+
+Unit tests cover the pure helpers in `geometry.ts` and `notesReducer.ts`. Integration tests drive the board through create, move, resize, and trash using pointer events.
+
 ## Usage
 
 - Drag on the empty board to draw a note at that position and size.
